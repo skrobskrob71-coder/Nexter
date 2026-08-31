@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "Nexter",
+    "slug": "nexter",
+    "version": "1.0.0",
+    "android": {
+      "package": "com.skrob.nexter",
+      "versionCode": 1
+    }
+  }
+}
