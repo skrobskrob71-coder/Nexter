@@ -46,6 +46,15 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           pip install buildozer cython==0.29.36
 
+      - name: Link SDK for Buildozer
+        shell: bash
+        run: |
+          mkdir -p "$HOME/.buildozer/android/platform"
+          rm -rf "$HOME/.buildozer/android/platform/android-sdk"
+          ln -s "$ANDROID_HOME" "$HOME/.buildozer/android/platform/android-sdk"
+          test -x "$HOME/.buildozer/android/platform/android-sdk/build-tools/34.0.0/aidl"
+          test -x "$HOME/.buildozer/android/platform/android-sdk/platform-tools/adb"
+
       - name: Build APK
         run: buildozer -v android debug
 
