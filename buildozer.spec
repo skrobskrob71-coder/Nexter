@@ -7,7 +7,7 @@ source.dir = .
 source.include_exts = py,kv,png,jpg,jpeg,ttf,db,svg
 source.exclude_dirs = .git,bin,venv,__pycache__,reports,data
 version = 1.0.0
-requirements = python3,kivy==2.3.0,reportlab,openpyxl
+requirements = python3,kivy==2.3.0
 orientation = portrait
 fullscreen = 0
 android.api = 34

@@ -1,9 +1,6 @@
 """تصدير التقارير المحاسبية إلى ملف Excel متعدد الأوراق."""
 from pathlib import Path
 from datetime import datetime
-from openpyxl import Workbook
-from openpyxl.styles import Font, PatternFill, Alignment
-from openpyxl.utils import get_column_letter
 
 class ExcelReportExporter:
     def __init__(self, db):
@@ -22,6 +19,10 @@ class ExcelReportExporter:
             ws.column_dimensions[get_column_letter(i)].width = max(14, min(32, len(str(headers[i-1])) + 8))
 
     def export_all(self, output_dir, from_date=None, to_date=None):
+        # تحميل openpyxl عند طلب Excel فقط؛ يسمح ببناء APK الأساسي دون recipe إضافي.
+        from openpyxl import Workbook
+        from openpyxl.styles import Font, PatternFill, Alignment
+        from openpyxl.utils import get_column_letter
         output = Path(output_dir); output.mkdir(parents=True, exist_ok=True)
         suffix = f"{from_date or 'all'}_{to_date or 'all'}"
         path = output / f"nexter_reports_{suffix}_{datetime.now():%H%M%S}.xlsx"
