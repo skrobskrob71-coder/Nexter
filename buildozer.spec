@@ -9,8 +9,5 @@ requirements = python3,kivy==2.2.1,kivymd==1.1.1,pillow,sqlite3
 orientation = portrait
 android.api = 34
 android.minapi = 24
-android.archs = arm64-v8a
-android.gradle_dependencies = androidx.appcompat:appcompat:1.6.1
-
-[app:android]
-android.sdk_path = /home/runner/.buildozer/android/platform/android-sdk
+android.arch = arm64-v8a
+android.debug = True
