@@ -17,7 +17,7 @@ jobs:
           channel: stable
           cache: true
       - name: Generate Android project
-        run: flutter create --platforms=android --org=org.skrob .
+        run: flutter create --project-name=nexter --platforms=android --org=org.skrob .
       - name: Get packages
         run: flutter pub get
       - name: Analyze
