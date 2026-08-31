@@ -19,6 +19,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
 
+      - name: Select JDK 17
+        shell: bash
+        run: |
+          echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" >> "$GITHUB_ENV"
+          echo "/usr/lib/jvm/java-17-openjdk-amd64/bin" >> "$GITHUB_PATH"
+          /usr/lib/jvm/java-17-openjdk-amd64/bin/java -version
+
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
