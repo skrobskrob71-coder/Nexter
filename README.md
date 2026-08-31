@@ -1,45 +1,35 @@
-# Nexter Flutter
+# ناكستر | Nakster
 
-Nexter تطبيق محاسبي عربي يعمل دون اتصال، مبني الآن باستخدام Flutter وSQLite المحلي عبر `sqflite`. تم حذف مسار Kivy/Buildozer القديم لأنه كان سبب بطء وفشل البناء، وأصبح البناء يتم مباشرة عبر Flutter وGitHub Actions.
+تطبيق محاسبي Flutter عربي يعمل دون اتصال، بواجهة RTL وثيم Material 3 أزرق محاسبي، وقاعدة SQLite محلية للفواتير والعملاء والمنتجات والمصروفات.
 
-## التشغيل المحلي
+## الصفحات
 
-ثبّت Flutter 3.24 أو أحدث، ثم نفّذ:
+يبدأ التطبيق بشاشة Splash ثم Login، وبعد تسجيل الدخول يعرض لوحة التحكم بأربع بطاقات للمبيعات والمشتريات والرصيد والربح. يتضمن كذلك الفواتير مع حساب ضريبة 15% وجدول الفواتير، والعملاء مع الإضافة والتعديل والحذف، والمنتجات مع الكمية والسعر، والتقارير، والإعدادات والنسخ الاحتياطي.
 
-```bash
-flutter pub get
-flutter create --platforms=android --org=org.skrob .
-flutter run
-```
-
-## بناء APK
+## التشغيل والبناء
 
 ```bash
 flutter pub get
+flutter create --project-name=nakster --platforms=android --org=org.nakster .
 flutter analyze
-flutter build apk --release
+flutter build apk --release --shrink
+flutter build appbundle --release
 ```
 
-سيظهر الملف في:
-
-```text
-build/app/outputs/flutter-apk/app-release.apk
-```
+ينتج APK في `build/app/outputs/flutter-apk/app-release.apk` وApp Bundle في `build/app/outputs/bundle/release/app-release.aab`.
 
 ## GitHub Actions
 
-يعمل Workflow الموجود في `.github/workflows/flutter.yml` عند الدفع إلى `main` أو يدويًا من تبويب Actions. ينفذ إنشاء مشروع Android، تنزيل الحزم، التحليل، ثم `flutter build apk --release` ويرفع APK كـ artifact باسم `Nexter-flutter-release-apk`.
+يوجد Workflow في `.github/workflows/flutter.yml` يعمل عند الدفع إلى `main` أو يدويًا، وينفذ التحليل ثم يبني APK release مع `--shrink` وApp Bundle، ويرفعهما كـ artifacts باسمَي `Nakster-release-apk` و`Nakster-release-aab`.
 
 ## البنية
 
 | المسار | الوظيفة |
 |---|---|
-| `lib/main.dart` | التطبيق والواجهات والتنقل وقاعدة SQLite المحلية |
-| `pubspec.yaml` | حزم Flutter المطلوبة |
-| `.github/workflows/flutter.yml` | البناء التلقائي ورفع APK |
-| `assets/logo.svg` | هوية Nexter البصرية |
-| `app.json` و`eas.json` | ملفات Expo محفوظة للتوافق، لكنها ليست مسار بناء Flutter |
+| `lib/main.dart` | التطبيق والواجهات والتنقل |
+| `lib/data/app_database.dart` | SQLite والجداول والاستعلامات |
+| `pubspec.yaml` | حزم Flutter وخط Cairo |
+| `assets/Cairo-Regular.ttf` | الخط العربي المضمّن |
+| `.github/workflows/flutter.yml` | البناء التلقائي |
 
-## ملاحظة مهمة
-
-هذا الإصدار يستخدم Flutter بدل Python/Kivy؛ لذلك لم يعد `buildozer.spec` أو `requirements.txt` أو ملفات Python القديمة جزءًا من مسار البناء. قاعدة البيانات تنشأ تلقائيًا على الهاتف، وتوجد الجداول الأساسية للفواتير والمنتجات والمصروفات.
+لضمان حجم APK صغير، يستخدم البناء release مع `--shrink`، ومعمارية Android الافتراضية المجمعة في APK الواحد. يمكن استخدام `--split-per-abi` لاحقًا للحصول على ملفات أصغر لكل معمارية.

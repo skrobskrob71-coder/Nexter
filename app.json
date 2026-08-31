@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "Nexter",
-    "slug": "nexter",
+    "name": "ناكستر",
+    "slug": "nakster",
     "version": "1.0.0",
     "android": {
-      "package": "com.skrob.nexter",
+      "package": "org.nakster.app",
       "versionCode": 1
     }
   }

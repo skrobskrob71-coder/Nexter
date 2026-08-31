@@ -1,4 +1,4 @@
-name: Build Nexter Flutter APK
+name: Build Nakster Flutter Android
 
 on:
   workflow_dispatch:
@@ -17,16 +17,24 @@ jobs:
           channel: stable
           cache: true
       - name: Generate Android project
-        run: flutter create --project-name=nexter --platforms=android --org=org.skrob .
+        run: flutter create --project-name=nakster --platforms=android --org=org.nakster .
       - name: Get packages
         run: flutter pub get
       - name: Analyze
         run: flutter analyze
-      - name: Build APK
-        run: flutter build apk --release
+      - name: Build APK release with shrinking
+        run: flutter build apk --release --shrink
+      - name: Build Android App Bundle
+        run: flutter build appbundle --release
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Nexter-flutter-release-apk
+          name: Nakster-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+      - name: Upload App Bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: Nakster-release-aab
+          path: build/app/outputs/bundle/release/app-release.aab
           if-no-files-found: error

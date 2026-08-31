@@ -1,6 +1,6 @@
-name: nexter
-description: تطبيق Nexter المحاسبي العربي البديل لـ Dexter.
-publish_to: "none"
+name: nakster
+description: تطبيق ناكستر المحاسبي العربي الاحترافي.
+publish_to: none
 version: 1.0.0+1
 
 environment:
@@ -9,7 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.8
+  flutter_localizations:
+    sdk: flutter
   sqflite: ^2.3.3+1
   path: ^1.9.0
   intl: ^0.19.0
@@ -23,3 +24,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/logo.svg
+  fonts:
+    - family: Cairo
+      fonts:
+        - asset: assets/Cairo-Regular.ttf
