@@ -1,7 +1,0 @@
-kivy
-kivymd
-sqlite3
-openpyxl
-reportlab
-pyzbar
-kivy_garden.zbarcam
