@@ -49,11 +49,19 @@ jobs:
       - name: Link SDK for Buildozer
         shell: bash
         run: |
+          SDK="$HOME/.buildozer/android/platform/android-sdk"
           mkdir -p "$HOME/.buildozer/android/platform"
-          rm -rf "$HOME/.buildozer/android/platform/android-sdk"
-          ln -s "$ANDROID_HOME" "$HOME/.buildozer/android/platform/android-sdk"
-          test -x "$HOME/.buildozer/android/platform/android-sdk/build-tools/34.0.0/aidl"
-          test -x "$HOME/.buildozer/android/platform/android-sdk/platform-tools/adb"
+          rm -rf "$SDK"
+          mkdir -p "$SDK/tools/bin" "$SDK/cmdline-tools"
+          ln -s "$ANDROID_HOME/cmdline-tools/latest" "$SDK/cmdline-tools/latest"
+          ln -s "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "$SDK/tools/bin/sdkmanager"
+          ln -s "$ANDROID_HOME/platform-tools" "$SDK/platform-tools"
+          ln -s "$ANDROID_HOME/build-tools" "$SDK/build-tools"
+          ln -s "$ANDROID_HOME/platforms" "$SDK/platforms"
+          test -x "$SDK/tools/bin/sdkmanager"
+          test -x "$SDK/build-tools/34.0.0/aidl"
+          test -x "$SDK/platform-tools/adb"
+          "$SDK/tools/bin/sdkmanager" --version
 
       - name: Build APK
         run: buildozer -v android debug
