@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "ناكستر",
-    "slug": "nakster",
+    "name": "ناكستر Naxter",
+    "slug": "naxter",
     "version": "1.0.0",
     "android": {
-      "package": "org.nakster.app",
+      "package": "com.naxter.app",
       "versionCode": 1
     }
   }

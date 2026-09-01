@@ -17,7 +17,10 @@ jobs:
           channel: stable
           cache: true
       - name: Generate Android project
-        run: flutter create --project-name=nakster --platforms=android --org=org.nakster .
+        run: flutter create --project-name=naxter --platforms=android --org=com.naxter .
+      - name: Set Android application id
+        run: |
+          grep -rl 'com.naxter.naxter' android | xargs -r sed -i 's/com\.naxter\.naxter/com.naxter.app/g'
       - name: Get packages
         run: flutter pub get
       - name: Analyze

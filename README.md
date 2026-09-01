@@ -1,35 +1,41 @@
-# ناكستر | Nakster
+# ناكستر Naxter
 
-تطبيق محاسبي Flutter عربي يعمل دون اتصال، بواجهة RTL وثيم Material 3 أزرق محاسبي، وقاعدة SQLite محلية للفواتير والعملاء والمنتجات والمصروفات.
+تطبيق محاسبي Flutter عربي يعمل دون اتصال، بواجهة RTL كاملة، ثيم Material 3 أزرق محاسبي، وقاعدة SQLite محلية للفواتير والعملاء والمنتجات وبنود الفواتير.
 
 ## الصفحات
 
-يبدأ التطبيق بشاشة Splash ثم Login، وبعد تسجيل الدخول يعرض لوحة التحكم بأربع بطاقات للمبيعات والمشتريات والرصيد والربح. يتضمن كذلك الفواتير مع حساب ضريبة 15% وجدول الفواتير، والعملاء مع الإضافة والتعديل والحذف، والمنتجات مع الكمية والسعر، والتقارير، والإعدادات والنسخ الاحتياطي.
+يبدأ التطبيق بشاشة Splash لمدة ثلاث ثوانٍ، ثم Login، وبعدها MainScreen تحتوي Drawer وBottomNavigationBar بخمسة تبويبات: لوحة التحكم، الفواتير، العملاء، المنتجات، والتقارير. الإعدادات متاحة من الـ Drawer.
 
-## التشغيل والبناء
-
-```bash
-flutter pub get
-flutter create --project-name=nakster --platforms=android --org=org.nakster .
-flutter analyze
-flutter build apk --release --shrink
-flutter build appbundle --release
-```
-
-ينتج APK في `build/app/outputs/flutter-apk/app-release.apk` وApp Bundle في `build/app/outputs/bundle/release/app-release.aab`.
-
-## GitHub Actions
-
-يوجد Workflow في `.github/workflows/flutter.yml` يعمل عند الدفع إلى `main` أو يدويًا، وينفذ التحليل ثم يبني APK release مع `--shrink` وApp Bundle، ويرفعهما كـ artifacts باسمَي `Nakster-release-apk` و`Nakster-release-aab`.
+تحتوي لوحة التحكم على بطاقات المبيعات والمشتريات وعدد العملاء وصافي الربح، ورسم بياني/ملخص آخر الفواتير. توفر شاشة الفواتير إضافة فاتورة وحساب ضريبة 15% وجدولًا للحذف والطباعة. توفر شاشة العملاء الإضافة والتعديل والحذف والبحث، وتوفر شاشة المنتجات الباركود والكمية وسعر الشراء وسعر البيع.
 
 ## البنية
 
 | المسار | الوظيفة |
 |---|---|
-| `lib/main.dart` | التطبيق والواجهات والتنقل |
-| `lib/data/app_database.dart` | SQLite والجداول والاستعلامات |
-| `pubspec.yaml` | حزم Flutter وخط Cairo |
-| `assets/Cairo-Regular.ttf` | الخط العربي المضمّن |
-| `.github/workflows/flutter.yml` | البناء التلقائي |
+| `lib/features/splash/splash_screen.dart` | شاشة البداية |
+| `lib/features/auth/login_screen.dart` | تسجيل الدخول |
+| `lib/features/main_screen.dart` | Drawer وBottomNavigationBar |
+| `lib/features/home/dashboard_screen.dart` | لوحة المؤشرات والملخص |
+| `lib/features/invoices/` | الفواتير وإضافة فاتورة |
+| `lib/features/customers/customers_screen.dart` | CRUD العملاء والبحث |
+| `lib/features/products_screen.dart` | إدارة المنتجات والمخزون |
+| `lib/features/reports_screen.dart` | التقارير المالية |
+| `lib/features/settings_screen.dart` | الإعدادات والنسخ الاحتياطي |
+| `lib/core/database/database_helper.dart` | SQLite والجداول والاستعلامات |
+| `lib/core/services/pdf_service.dart` | إنشاء وطباعة PDF |
 
-لضمان حجم APK صغير، يستخدم البناء release مع `--shrink`، ومعمارية Android الافتراضية المجمعة في APK الواحد. يمكن استخدام `--split-per-abi` لاحقًا للحصول على ملفات أصغر لكل معمارية.
+## التشغيل والبناء
+
+```bash
+flutter pub get
+flutter create --project-name=naxter --platforms=android --org=com.naxter .
+flutter analyze
+flutter build apk --release
+flutter build appbundle --release
+```
+
+يتم إنشاء APK في `build/app/outputs/flutter-apk/app-release.apk` وApp Bundle في `build/app/outputs/bundle/release/app-release.aab`.
+
+## GitHub Actions
+
+يشغّل `.github/workflows/build.yml` أوتوماتيكيًا عند الدفع إلى `main` أو يدويًا من تبويب Actions. ينفذ `flutter pub get`، و`flutter analyze`، ثم `flutter build apk --release` و`flutter build appbundle --release`، ويرفع الناتجين كـ Artifacts باسم `Naxter-Release`.
