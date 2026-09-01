@@ -23,6 +23,12 @@ jobs:
           grep -rl 'com.naxter.naxter' android | xargs -r sed -i 's/com\.naxter\.naxter/com.naxter.app/g'
       - name: Get packages
         run: flutter pub get
+      - name: Patch legacy barcode plugin namespace
+        run: |
+          SCANNER_GRADLE=$(find "$PUB_CACHE" -path '*flutter_barcode_scanner-2.0.0/android/build.gradle' -print -quit)
+          if [ -n "$SCANNER_GRADLE" ]; then
+            grep -q "namespace" "$SCANNER_GRADLE" || sed -i "/android[[:space:]]*{/a\\    namespace 'com.amolg.flutterbarcodescanner'" "$SCANNER_GRADLE"
+          fi
       - name: Analyze
         run: flutter analyze
       - name: Build APK release with shrinking
