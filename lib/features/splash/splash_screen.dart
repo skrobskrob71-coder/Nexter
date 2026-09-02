@@ -1,0 +1,5 @@
+import 'package:flutter/material.dart';
+import '../auth/login_screen.dart';
+
+class SplashScreen extends StatefulWidget { const SplashScreen({super.key}); @override State<SplashScreen> createState()=>_SplashState(); }
+class _SplashState extends State<SplashScreen>{@override void initState(){super.initState();Future.delayed(const Duration(seconds:3),(){if(mounted)Navigator.pushReplacement(context,MaterialPageRoute(builder:(_)=>const LoginScreen()));});}@override Widget build(BuildContext c)=>Scaffold(backgroundColor:const Color(0xFF0D47A1),body:Center(child:Column(mainAxisSize:MainAxisSize.min,children:[Container(width:120,height:120,decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(28)),child:const Center(child:Text('N',style:TextStyle(fontSize:82,fontWeight:FontWeight.bold,color:Color(0xFF0D47A1)))),const SizedBox(height:18),const Text('ناكستر',style:TextStyle(color:Colors.white,fontSize:34,fontWeight:FontWeight.bold)),const Text('Naxter Accounting',style:TextStyle(color:Colors.white70))])));}
