@@ -129,12 +129,13 @@ class DashboardPage extends StatelessWidget {
           const SizedBox(height: 16),
           SizedBox(height: 230, child: LineChart(LineChartData(lineBarsData: [LineChartBarData(spots: [for (var i = 0; i < values.length; i++) FlSpot(i.toDouble(), values[i])], isCurved: true, barWidth: 4, color: navy)]))),
         ]))),
-      ];
+      ]);
+
     });
   });
 }
 Widget _metric(String title, num value, IconData icon, Color color) {
-  return SizedBox(width: 178, child: Card(child: Padding(padding: const EdgeInsets.all(16), child: Row(children: [CircleAvatar(backgroundColor: color.withOpacity(.12), child: Icon(icon, color: color)), const SizedBox(width: 10), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: const TextStyle(fontSize: 12)), Text(money.format(value), style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: color))]))])));
+  return SizedBox(width: 178, child: Card(child: Padding(padding: const EdgeInsets.all(16), child: Row(children: [CircleAvatar(backgroundColor: color.withOpacity(.12), child: Icon(icon, color: color)), const SizedBox(width: 10), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: const TextStyle(fontSize: 12)), Text(money.format(value), style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: color))]))]))));
 }
 
 class InvoicesPage extends StatefulWidget { final VoidCallback onChanged; const InvoicesPage({required this.onChanged, super.key}); @override State<InvoicesPage> createState() => _InvoicesPageState(); }
