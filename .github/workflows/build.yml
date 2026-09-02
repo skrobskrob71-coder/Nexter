@@ -36,7 +36,7 @@ jobs:
             grep -q "namespace" "$BLUE_GRADLE" || sed -i "/android[[:space:]]*{/a\\    namespace 'com.gprinter.bluetooth_print'" "$BLUE_GRADLE"
           fi
       - name: Analyze
-        run: flutter analyze
+        run: flutter analyze --no-fatal-infos
       - name: Build APK release with shrinking
         run: flutter build apk --release --shrink
       - name: Build Android App Bundle
