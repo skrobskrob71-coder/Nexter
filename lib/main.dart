@@ -68,7 +68,7 @@ class DashboardPage extends StatelessWidget {
           const SizedBox(height: 20),
           SizedBox(height: 220, child: LineChart(LineChartData(lineBarsData: [LineChartBarData(spots: [for (var i = 0; i < values.length; i++) FlSpot(i.toDouble(), values[i])], isCurved: true)]))),
           const Text('مبيعات آخر 6 شهور', textAlign: TextAlign.center),
-        ];
+        ]);
       },
     );
   }
