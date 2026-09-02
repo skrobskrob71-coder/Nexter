@@ -23,6 +23,7 @@ class DatabaseHelper {
     });
   }
   Future<List<Map<String,dynamic>>> query(String table,{String? where,List<Object?>? args}) async => (await database).query(table,where:where,whereArgs:args,orderBy:'id DESC');
+  Future<List<Map<String,dynamic>>> all(String table,{String? where,List<Object?>? args}) => query(table,where:where,args:args);
   Future<int> insert(String table,Map<String,dynamic> data) async => (await database).insert(table,data);
   Future<int> update(String table,Map<String,dynamic> data,int id) async => (await database).update(table,data,where:'id=?',whereArgs:[id]);
   Future<int> delete(String table,int id) async => (await database).delete(table,where:'id=?',whereArgs:[id]);

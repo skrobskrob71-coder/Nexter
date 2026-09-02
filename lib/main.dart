@@ -96,12 +96,12 @@ class _HomeShellState extends State<HomeShell> {
       ProductsPage(onChanged: refresh),
       const ReportsPage(),
     ];
-    return Directionality(textDirection: TextDirection.rtl, child: Scaffold(
+    return Scaffold(
       appBar: AppBar(title: Text(titles[tab]), backgroundColor: Colors.white, actions: [IconButton(onPressed: refresh, icon: const Icon(Icons.refresh)), IconButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage())), icon: const Icon(Icons.settings))]),
       drawer: AppDrawer(onSelected: (value) { Navigator.pop(context); if (value == 5) { Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage())); } else { setState(() => tab = value); } }),
       body: pages[tab],
       bottomNavigationBar: NavigationBar(selectedIndex: tab, onDestinationSelected: (value) => setState(() => tab = value), destinations: const [NavigationDestination(icon: Icon(Icons.dashboard_outlined), label: 'الرئيسية'), NavigationDestination(icon: Icon(Icons.receipt_long_outlined), label: 'الفواتير'), NavigationDestination(icon: Icon(Icons.people_outline), label: 'العملاء'), NavigationDestination(icon: Icon(Icons.inventory_2_outlined), label: 'المنتجات'), NavigationDestination(icon: Icon(Icons.analytics_outlined), label: 'التقارير')]),
-    ));
+    );
   }
 }
 
