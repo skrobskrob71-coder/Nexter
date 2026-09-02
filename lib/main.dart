@@ -54,7 +54,30 @@ class _LoginPageState extends State<LoginPage> {
     }
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomeShell()));
   }
-  @override Widget build(BuildContext context) => Scaffold(body: Center(child: SingleChildScrollView(padding: const EdgeInsets.all(24), child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 460), child: Card(child: Padding(padding: const EdgeInsets.all(28), child: Column(children: [const CircleAvatar(radius: 38, backgroundColor: navy, child: Text('N', style: TextStyle(color: Colors.white, fontSize: 44, fontWeight: FontWeight.bold))), const SizedBox(height: 16), const Text('مرحباً بك في ناكستر', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)), const SizedBox(height: 24), TextField(controller: user, decoration: const InputDecoration(labelText: 'اسم المستخدم', prefixIcon: Icon(Icons.person))), const SizedBox(height: 14), TextField(controller: pass, obscureText: true, decoration: const InputDecoration(labelText: 'كلمة المرور', prefixIcon: Icon(Icons.lock))), const SizedBox(height: 22), SizedBox(width: double.infinity, child: FilledButton.icon(onPressed: login, icon: const Icon(Icons.login), label: const Padding(padding: EdgeInsets.all(12), child: Text('تسجيل الدخول'))))]))))));
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Card(
+          margin: const EdgeInsets.all(24),
+          child: Padding(
+            padding: const EdgeInsets.all(28),
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              const CircleAvatar(radius: 38, backgroundColor: navy, child: Text('N', style: TextStyle(color: Colors.white, fontSize: 44, fontWeight: FontWeight.bold))),
+              const SizedBox(height: 16),
+              const Text('مرحباً بك في ناكستر', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 24),
+              TextField(controller: user, decoration: const InputDecoration(labelText: 'اسم المستخدم', prefixIcon: Icon(Icons.person))),
+              const SizedBox(height: 14),
+              TextField(controller: pass, obscureText: true, decoration: const InputDecoration(labelText: 'كلمة المرور', prefixIcon: Icon(Icons.lock))),
+              const SizedBox(height: 22),
+              SizedBox(width: double.infinity, child: FilledButton.icon(onPressed: login, icon: const Icon(Icons.login), label: const Text('تسجيل الدخول'))),
+            ]),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class HomeShell extends StatefulWidget {
@@ -95,11 +118,24 @@ class DashboardPage extends StatelessWidget {
     return FutureBuilder<List<double>>(future: DatabaseHelper.instance.monthlySales(), builder: (context, chart) {
       final data = summary.data ?? <String, num>{};
       final values = chart.data ?? List<double>.filled(6, 0);
-      return ListView(padding: const EdgeInsets.all(16), children: [const Text('نظرة عامة', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)), Text(DateFormat('EEEE، d MMMM y', 'ar').format(DateTime.now()), style: const TextStyle(color: Colors.black54)), const SizedBox(height: 18), Wrap(spacing: 10, runSpacing: 10, children: [_metric('إجمالي المبيعات', data['sales'] ?? 0, Icons.trending_up, Colors.green), _metric('صافي الربح', data['profit'] ?? 0, Icons.account_balance_wallet, navy), _metric('عدد العملاء', data['customers'] ?? 0, Icons.people, Colors.orange), _metric('عدد المنتجات', data['products'] ?? 0, Icons.inventory_2, Colors.purple)]), const SizedBox(height: 18), Card(child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [const Text('المبيعات خلال آخر 6 أشهر', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)), const SizedBox(height: 16), SizedBox(height: 230, child: LineChart(LineChartData(minY: 0, gridData: const FlGridData(show: true), titlesData: const FlTitlesData(rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)), topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false))), lineBarsData: [LineChartBarData(spots: [for (var i = 0; i < values.length; i++) FlSpot(i.toDouble(), values[i])], isCurved: true, barWidth: 4, color: navy)])))])))];
+      return ListView(padding: const EdgeInsets.all(16), children: [
+        const Text('نظرة عامة', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+        Text(DateFormat('EEEE، d MMMM y', 'ar').format(DateTime.now()), style: const TextStyle(color: Colors.black54)),
+        const SizedBox(height: 18),
+        Wrap(spacing: 10, runSpacing: 10, children: [_metric('إجمالي المبيعات', data['sales'] ?? 0, Icons.trending_up, Colors.green), _metric('صافي الربح', data['profit'] ?? 0, Icons.account_balance_wallet, navy), _metric('عدد العملاء', data['customers'] ?? 0, Icons.people, Colors.orange), _metric('عدد المنتجات', data['products'] ?? 0, Icons.inventory_2, Colors.purple)]),
+        const SizedBox(height: 18),
+        Card(child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Text('المبيعات خلال آخر 6 أشهر', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 16),
+          SizedBox(height: 230, child: LineChart(LineChartData(lineBarsData: [LineChartBarData(spots: [for (var i = 0; i < values.length; i++) FlSpot(i.toDouble(), values[i])], isCurved: true, barWidth: 4, color: navy)]))),
+        ]))),
+      ];
     });
   });
 }
-Widget _metric(String title, num value, IconData icon, Color color) => SizedBox(width: 178, child: Card(child: Padding(padding: const EdgeInsets.all(16), child: Row(children: [CircleAvatar(backgroundColor: color.withOpacity(.12), child: Icon(icon, color: color)), const SizedBox(width: 10), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: const TextStyle(fontSize: 12)), Text(money.format(value), style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: color))]))])));
+Widget _metric(String title, num value, IconData icon, Color color) {
+  return SizedBox(width: 178, child: Card(child: Padding(padding: const EdgeInsets.all(16), child: Row(children: [CircleAvatar(backgroundColor: color.withOpacity(.12), child: Icon(icon, color: color)), const SizedBox(width: 10), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: const TextStyle(fontSize: 12)), Text(money.format(value), style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: color))]))])));
+}
 
 class InvoicesPage extends StatefulWidget { final VoidCallback onChanged; const InvoicesPage({required this.onChanged, super.key}); @override State<InvoicesPage> createState() => _InvoicesPageState(); }
 class _InvoicesPageState extends State<InvoicesPage> {
