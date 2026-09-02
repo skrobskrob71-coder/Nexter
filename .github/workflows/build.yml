@@ -24,12 +24,16 @@ jobs:
           rm -rf test
       - name: Get packages
         run: flutter pub get
-      - name: Patch legacy barcode plugin namespace
+      - name: Patch legacy Android plugins
         run: |
           SCANNER_GRADLE=$(find "$PUB_CACHE" -path '*flutter_barcode_scanner-2.0.0/android/build.gradle' -print -quit)
           if [ -n "$SCANNER_GRADLE" ]; then
             grep -q "namespace" "$SCANNER_GRADLE" || sed -i "/android[[:space:]]*{/a\\    namespace 'com.amolg.flutterbarcodescanner'" "$SCANNER_GRADLE"
             sed -i -E 's/compileSdkVersion[[:space:]]+[0-9]+/compileSdkVersion 35/g' "$SCANNER_GRADLE"
+          fi
+          BLUE_GRADLE=$(find "$PUB_CACHE" -path '*bluetooth_print-*/android/build.gradle' -print -quit)
+          if [ -n "$BLUE_GRADLE" ]; then
+            grep -q "namespace" "$BLUE_GRADLE" || sed -i "/android[[:space:]]*{/a\\    namespace 'com.gprinter.bluetooth_print'" "$BLUE_GRADLE"
           fi
       - name: Analyze
         run: flutter analyze
