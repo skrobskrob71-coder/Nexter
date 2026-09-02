@@ -116,17 +116,17 @@ class AppDrawer extends StatelessWidget {
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
   @override Widget build(BuildContext context) => FutureBuilder<Map<String, num>>(future: DatabaseHelper.instance.summary(), builder: (context, summary) {
-    return FutureBuilder<List<double>>(future: DatabaseHelper.instance.monthlySales(), builder: (context, chart) {
+    return FutureBuilder<List<double>>(future: DatabaseHelper.instance.dailySales(), builder: (context, chart) {
       final data = summary.data ?? <String, num>{};
-      final values = chart.data ?? List<double>.filled(6, 0);
+      final values = chart.data ?? List<double>.filled(7, 0);
       return ListView(padding: const EdgeInsets.all(16), children: [
         const Text('نظرة عامة', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
         Text(DateFormat('EEEE، d MMMM y', 'ar').format(DateTime.now()), style: const TextStyle(color: Colors.black54)),
         const SizedBox(height: 18),
-        Wrap(spacing: 10, runSpacing: 10, children: [_metric('إجمالي المبيعات', data['sales'] ?? 0, Icons.trending_up, Colors.green), _metric('صافي الربح', data['profit'] ?? 0, Icons.account_balance_wallet, navy), _metric('عدد العملاء', data['customers'] ?? 0, Icons.people, Colors.orange), _metric('عدد المنتجات', data['products'] ?? 0, Icons.inventory_2, Colors.purple)]),
+        Wrap(spacing: 10, runSpacing: 10, children: [_metric('إجمالي المبيعات', data['sales'] ?? 0, Icons.trending_up, Colors.green), _metric('صافي الربح', data['profit'] ?? 0, Icons.account_balance_wallet, navy), _metric('عدد العملاء', data['customers'] ?? 0, Icons.people, Colors.orange), _metric('عدد الفواتير', data['invoices'] ?? 0, Icons.receipt_long, Colors.purple)]),
         const SizedBox(height: 18),
         Card(child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Text('المبيعات خلال آخر 6 أشهر', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const Text('المبيعات خلال آخر 7 أيام', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
           SizedBox(height: 230, child: LineChart(LineChartData(lineBarsData: [LineChartBarData(spots: [for (var i = 0; i < values.length; i++) FlSpot(i.toDouble(), values[i])], isCurved: true, barWidth: 4, color: navy)]))),
         ]))),
@@ -193,13 +193,14 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
   final paid = TextEditingController(text: '0');
   List<Map<String, dynamic>> customers = [];
   List<Map<String, dynamic>> products = [];
+  List<Map<String, dynamic>> filteredProducts = [];
   List<Map<String, dynamic>> items = [];
   int? customerId;
   String customerName = 'نقدي';
   String payment = 'كاش';
   @override void initState() { super.initState(); load(); }
   @override void dispose() { search.dispose(); paid.dispose(); super.dispose(); }
-  Future<void> load() async { customers = await DatabaseHelper.instance.all('customers'); products = await DatabaseHelper.instance.all('products'); if (mounted) setState(() {}); }
+  Future<void> load() async { customers = await DatabaseHelper.instance.all('customers'); products = await DatabaseHelper.instance.all('products'); filteredProducts = products; if (mounted) setState(() {}); }
   double get subtotal => items.fold(0, (sum, item) => sum + (item['qty'] as num) * (item['price'] as num));
   Future<void> scan() async { final code = await FlutterBarcodeScanner.scanBarcode('#0D47A1', 'إلغاء', true, ScanMode.BARCODE); if (code == '-1') return; final found = products.where((p) => p['barcode'].toString() == code).toList(); if (found.isNotEmpty) addProduct(found.first); else if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('المنتج غير موجود'))); }
   void addProduct(Map<String, dynamic> product) { setState(() { final index = items.indexWhere((i) => i['product_id'] == product['id']); if (index >= 0) { items[index]['qty'] = (items[index]['qty'] as num) + 1; } else { items.add({'product_id': product['id'], 'name': product['name'], 'qty': 1.0, 'price': (product['price'] as num?) ?? (product['sale_price'] as num?) ?? 0, 'cost': (product['cost'] as num?) ?? 0, 'discount': 0}); } }); }
@@ -212,11 +213,12 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
     return Scaffold(
       appBar: AppBar(title: const Text('الكاشير • فاتورة جديدة')),
       body: ListView(padding: const EdgeInsets.all(16), children: [
-        Row(children: [Expanded(child: TextField(controller: search, onSubmitted: (value) { final found = products.where((p) => p['name'].toString().contains(value) || p['barcode'].toString() == value).toList(); if (found.isNotEmpty) addProduct(found.first); }, decoration: const InputDecoration(labelText: 'بحث عن منتج أو باركود', prefixIcon: Icon(Icons.search)))), const SizedBox(width: 8), IconButton.filled(onPressed: scan, icon: const Icon(Icons.qr_code_scanner))]),
+        Row(children: [Expanded(child: TextField(controller: search, onChanged: (value) { setState(() { filteredProducts = products.where((p) => p['name'].toString().contains(value) || p['barcode'].toString().contains(value)).toList(); }); }, onSubmitted: (value) { final found = products.where((p) => p['name'].toString().contains(value) || p['barcode'].toString() == value).toList(); if (found.isNotEmpty) { addProduct(found.first); search.clear(); setState(() => filteredProducts = []); } }, decoration: const InputDecoration(labelText: 'بحث عن منتج أو باركود', prefixIcon: Icon(Icons.search)))), const SizedBox(width: 8), IconButton.filled(onPressed: scan, icon: const Icon(Icons.qr_code_scanner))]),
+        if (search.text.isNotEmpty && filteredProducts.isNotEmpty) Card(child: Column(children: filteredProducts.take(5).map((product) => ListTile(title: Text(product['name'].toString()), subtitle: Text('الكمية المتاحة: ${product['quantity']}'), trailing: Text('${money.format(product['price'] ?? product['sale_price'] ?? 0)} ر.س'), onTap: () { addProduct(product); search.clear(); setState(() => filteredProducts = []); })).toList())),
         const SizedBox(height: 8),
         OutlinedButton.icon(onPressed: pickProduct, icon: const Icon(Icons.add_shopping_cart), label: const Text('إضافة منتج')),
         const SizedBox(height: 12),
-        if (items.isEmpty) const EmptyState(icon: Icons.shopping_cart_outlined, text: 'لم تتم إضافة منتجات') else ...items.asMap().entries.map((entry) { final item = entry.value; return Card(child: ListTile(title: Text(item['name'].toString()), subtitle: Text('الكمية: ${item['qty']} • السعر: ${money.format(item['price'])}'), trailing: Row(mainAxisSize: MainAxisSize.min, children: [Text(money.format((item['qty'] as num) * (item['price'] as num))), IconButton(onPressed: () => setState(() => items.removeAt(entry.key)), icon: const Icon(Icons.delete_outline, color: Colors.red))]))); }),
+        if (items.isEmpty) const EmptyState(icon: Icons.shopping_cart_outlined, text: 'لم تتم إضافة منتجات') else ...items.asMap().entries.map((entry) { final item = entry.value; return Card(child: ListTile(title: Text(item['name'].toString()), subtitle: Text('الكمية: ${item['qty']} • السعر: ${money.format(item['price'])}'), trailing: Row(mainAxisSize: MainAxisSize.min, children: [IconButton(onPressed: () => setState(() => item['qty'] = (item['qty'] as num) + 1), icon: const Icon(Icons.add_circle_outline, color: navy)), Text('${item['qty']}'), IconButton(onPressed: () { setState(() { if ((item['qty'] as num) > 1) item['qty'] = (item['qty'] as num) - 1; }); }, icon: const Icon(Icons.remove_circle_outline, color: Colors.orange)), Text(money.format((item['qty'] as num) * (item['price'] as num))), IconButton(onPressed: () => setState(() => items.removeAt(entry.key)), icon: const Icon(Icons.delete_outline, color: Colors.red))]))); }),
         Card(child: Padding(padding: const EdgeInsets.all(14), child: Column(children: [DropdownButtonFormField<int?>(value: customerId, decoration: const InputDecoration(labelText: 'العميل'), items: [const DropdownMenuItem<int?>(value: null, child: Text('نقدي')), ...customers.map((c) => DropdownMenuItem<int?>(value: c['id'] as int, child: Text(c['name'].toString())))], onChanged: (value) => setState(() { customerId = value; customerName = value == null ? 'نقدي' : customers.firstWhere((c) => c['id'] == value)['name'].toString(); })), const SizedBox(height: 12), DropdownButtonFormField<String>(value: payment, decoration: const InputDecoration(labelText: 'طريقة الدفع'), items: const [DropdownMenuItem(value: 'كاش', child: Text('كاش')), DropdownMenuItem(value: 'شبكة', child: Text('شبكة')), DropdownMenuItem(value: 'أجل', child: Text('أجل'))], onChanged: (value) => setState(() => payment = value ?? 'كاش')), const SizedBox(height: 12), TextField(controller: paid, onChanged: (_) => setState(() {}), keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'المبلغ المدفوع')), _line('المجموع', subtotal), _line('الضريبة 15%', subtotal * .15), _line('الإجمالي', total, bold: true), _line('المتبقي', remaining, bold: true)]))),
         const SizedBox(height: 14),
         Row(children: [Expanded(child: OutlinedButton(onPressed: () => save(print: false), child: const Text('حفظ فقط'))), const SizedBox(width: 10), Expanded(child: FilledButton.icon(onPressed: () => save(print: true), icon: const Icon(Icons.print), label: const Text('حفظ وطباعة')))]),
