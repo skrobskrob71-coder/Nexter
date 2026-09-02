@@ -25,14 +25,54 @@ class _SplashPageState extends State<SplashPage> {
   @override Widget build(BuildContext context){return const Scaffold(backgroundColor:Color(0xFF0D47A1),body:Center(child:Text('ناكستر Naxter',style:TextStyle(color:Colors.white,fontSize:32,fontWeight:FontWeight.bold))));}
 }
 
-class LoginPage extends StatelessWidget { const LoginPage({super.key});
-  @override Widget build(BuildContext context){return Scaffold(body:Center(child:Card(margin:const EdgeInsets.all(24),child:Padding(padding:const EdgeInsets.all(24),child:Column(mainAxisSize:MainAxisSize.min,children:[const Text('تسجيل الدخول',style:TextStyle(fontSize:24,fontWeight:FontWeight.bold)),const SizedBox(height:16),const TextField(decoration:InputDecoration(labelText:'اسم المستخدم',border:OutlineInputBorder())),const SizedBox(height:12),const TextField(obscureText:true,decoration:InputDecoration(labelText:'كلمة المرور',border:OutlineInputBorder())),const SizedBox(height:16),SizedBox(width:double.infinity,child:FilledButton(onPressed:()=>Navigator.pushReplacement(context,MaterialPageRoute(builder:(_)=>const HomePage())),child:const Text('دخول'))])))));}
+class LoginPage extends StatelessWidget {
+  const LoginPage({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              const Text('تسجيل الدخول'),
+              const SizedBox(height: 16),
+              const TextField(decoration: InputDecoration(labelText: 'اسم المستخدم')),
+              const SizedBox(height: 12),
+              const TextField(obscureText: true, decoration: InputDecoration(labelText: 'كلمة المرور')),
+              const SizedBox(height: 16),
+              FilledButton(onPressed: () { Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomePage())); }, child: const Text('دخول')),
+            ]),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class HomePage extends StatefulWidget { const HomePage({super.key}); @override State<HomePage> createState()=>_HomePageState(); }
 class _HomePageState extends State<HomePage>{int index=0;final names=const['الرئيسية','الفواتير','العملاء','المنتجات','التقارير'];@override Widget build(BuildContext context){const pages=[DashboardPage(),InvoicesPage(),CustomersPage(),ProductsPage(),ReportsPage()];return Scaffold(appBar:AppBar(title:Text(names[index])),drawer:Drawer(child:ListView(children:[const DrawerHeader(decoration:BoxDecoration(color:Color(0xFF0D47A1)),child:Center(child:Text('ناكستر Naxter',style:TextStyle(color:Colors.white,fontSize:24)))),ListTile(title:const Text('الإعدادات'),leading:const Icon(Icons.settings),onTap:()=>Navigator.push(context,MaterialPageRoute(builder:(_)=>const SettingsPage())))])),body:pages[index],bottomNavigationBar:NavigationBar(selectedIndex:index,onDestinationSelected:(v)=>setState(()=>index=v),destinations:const[NavigationDestination(icon:Icon(Icons.dashboard),label:'الرئيسية'),NavigationDestination(icon:Icon(Icons.receipt),label:'الفواتير'),NavigationDestination(icon:Icon(Icons.people),label:'العملاء'),NavigationDestination(icon:Icon(Icons.inventory),label:'المنتجات'),NavigationDestination(icon:Icon(Icons.bar_chart),label:'التقارير')]));}}
 
-class DashboardPage extends StatelessWidget{const DashboardPage({super.key});@override Widget build(BuildContext context){return FutureBuilder<List<double>>(future:DatabaseHelper.instance.monthlySales(),builder:(context,s){final v=s.data??List<double>.filled(6,0);return ListView(padding:const EdgeInsets.all(16),children:[const Text('لوحة التحكم',style:TextStyle(fontSize:24,fontWeight:FontWeight.bold,color:Color(0xFF0D47A1))),const SizedBox(height:16),Wrap(spacing:8,runSpacing:8,children:const[MetricCard('إجمالي المبيعات'),MetricCard('إجمالي المشتريات'),MetricCard('عدد العملاء'),MetricCard('صافي الربح')]),const SizedBox(height:20),Card(child:Padding(padding:const EdgeInsets.all(12),child:SizedBox(height:220,child:LineChart(LineChartData(lineBarsData:[LineChartBarData(spots:[for(var i=0;i<v.length;i++)FlSpot(i.toDouble(),v[i])],isCurved:true,color:const Color(0xFF0D47A1))]))))),const Text('مبيعات آخر 6 شهور',textAlign:TextAlign.center)];});}}
+class DashboardPage extends StatelessWidget {
+  const DashboardPage({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<double>>(
+      future: DatabaseHelper.instance.monthlySales(),
+      builder: (context, snapshot) {
+        final values = snapshot.data ?? List<double>.filled(6, 0);
+        return ListView(padding: const EdgeInsets.all(16), children: [
+          const Text('لوحة التحكم', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 16),
+          const Wrap(spacing: 8, runSpacing: 8, children: [MetricCard('إجمالي المبيعات'), MetricCard('إجمالي المشتريات'), MetricCard('عدد العملاء'), MetricCard('صافي الربح')]),
+          const SizedBox(height: 20),
+          SizedBox(height: 220, child: LineChart(LineChartData(lineBarsData: [LineChartBarData(spots: [for (var i = 0; i < values.length; i++) FlSpot(i.toDouble(), values[i])], isCurved: true)]))),
+          const Text('مبيعات آخر 6 شهور', textAlign: TextAlign.center),
+        ];
+      },
+    );
+  }
+}
 class MetricCard extends StatelessWidget{final String title;const MetricCard(this.title,{super.key});@override Widget build(BuildContext context)=>SizedBox(width:165,child:Card(child:Padding(padding:const EdgeInsets.all(14),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[const Icon(Icons.analytics,color:Color(0xFF0D47A1)),Text(title),const Text('0.00 ر.س',style:TextStyle(fontWeight:FontWeight.bold,color:Color(0xFF0D47A1)))]))));}
 
 class InvoicesPage extends StatelessWidget{const InvoicesPage({super.key});@override Widget build(BuildContext context)=>ListView(padding:const EdgeInsets.all(16),children:[FilledButton.icon(onPressed:()=>showDialog(context:context,builder:(_)=>const AlertDialog(title:Text('فاتورة جديدة'),content:TextField(decoration:InputDecoration(labelText:'المبلغ')),actions:[TextButton(onPressed:null,child:Text('حفظ'))])),icon:const Icon(Icons.add),label:const Text('فاتورة جديدة')),const SizedBox(height:12),const Card(child:ListTile(title:Text('لا توجد فواتير بعد')))]);}
