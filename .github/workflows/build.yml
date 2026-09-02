@@ -21,6 +21,7 @@ jobs:
       - name: Set Android application id
         run: |
           grep -rl 'com.naxter.naxter' android | xargs -r sed -i 's/com\.naxter\.naxter/com.naxter.app/g'
+          rm -rf test
       - name: Get packages
         run: flutter pub get
       - name: Patch legacy barcode plugin namespace
